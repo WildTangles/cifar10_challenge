@@ -95,19 +95,20 @@ def report_acc_xent(x_data, y_data, model, sess, batches=1000):
 
 def eval_robustness(x, y, model, sess):
 
-  epsilon_scan = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5]
+  #epsilon_scan = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5]
+  epsilon_scan = [8./255.]
   for epsilon in epsilon_scan:
     print('scanning epsilon: {}'.format(epsilon))
     #epsilon = 0.005
-    step_size = 0.1
-    iterations=5
-    random_start=False
+    #step_size = 0.1
+    #iterations=5
+    #random_start=False
 
     # cifar10 challenge ref
     # epsilon = 8./255.
-    # step_size = 2./255.
-    # iterations=20
-    # random_start=False
+    step_size = 2./255.
+    iterations=20
+    random_start=False
 
       #init foolbox model
     fb_model = fb.models.TensorFlowModel(model.x_input, model.pre_softmax, bounds=(0., 255.))
@@ -135,10 +136,10 @@ def eval_robustness(x, y, model, sess):
       y_batches = np.array_split(y_class, 100)
 
       #init the attack    
-      attack_criteria = fb.criteria.TopKMisclassification(3)
+      #attack_criteria = fb.criteria.TopKMisclassification(3)
 
       #cifar10 challenge ref
-      #attack_criteria = fb.criteria.TopKMisclassification(1)
+      attack_criteria = fb.criteria.TopKMisclassification(1)
       fb_attack = attack(model=fb_model, criterion=attack_criteria, distance=attack_distance)
 
       for x_batch, y_batch in tqdm(zip(x_batches, y_batches)):  
